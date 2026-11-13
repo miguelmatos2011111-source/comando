@@ -93,6 +93,9 @@
   .app span:last-child { max-width: 76px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
   /* teclado numérico */
+  #srcpad { display: none; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  #srcpad.show { display: grid; }
+  #srcpad .btn { height: 54px; border-radius: 16px; font-size: 17px; font-weight: 500; }
   #numpad { display: none; grid-template-columns: repeat(3, 1fr); gap: 10px; }
   #numpad.show { display: grid; }
   #numpad .btn { height: 54px; border-radius: 16px; font-size: 22px; }
@@ -148,7 +151,7 @@
     <button class="btn glass primary-btn" data-cmd='{"a":"home"}'>
       <svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg>Início
     </button>
-    <button class="btn glass" data-cmd='{"a":"app","id":"com.samsung.tv.coba.source","n":"Fontes"}'>
+    <button class="btn glass" id="src-toggle">
       <svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg>Fonte
     </button>
     <button class="btn glass" data-cmd='{"a":"app","id":"org.tizen.menu","n":"Definições"}'>
@@ -157,6 +160,12 @@
     <button class="btn glass" id="numpad-toggle">
       <svg viewBox="0 0 24 24"><circle cx="6" cy="6" r="1.2"/><circle cx="12" cy="6" r="1.2"/><circle cx="18" cy="6" r="1.2"/><circle cx="6" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="18" cy="12" r="1.2"/><circle cx="6" cy="18" r="1.2"/><circle cx="12" cy="18" r="1.2"/><circle cx="18" cy="18" r="1.2"/></svg>Canal
     </button>
+  </div>
+
+  <div id="srcpad">
+    <button class="btn glass" data-cmd='{"a":"src","t":"HDMI","n":1}'>HDMI 1</button>
+    <button class="btn glass" data-cmd='{"a":"src","t":"HDMI","n":2}'>HDMI 2</button>
+    <button class="btn glass" data-cmd='{"a":"app","id":"org.tizen.tv-viewer","n":"TV"}'>TV</button>
   </div>
 
   <div id="numpad"></div>
@@ -371,6 +380,9 @@
     np.appendChild(b);
   });
   document.getElementById("numpad-toggle").addEventListener("click", function () { np.classList.toggle("show"); });
+  document.getElementById("src-toggle").addEventListener("click", function () {
+    document.getElementById("srcpad").classList.toggle("show");
+  });
 
   // ===== Apps =====
   function renderApps(list) {
