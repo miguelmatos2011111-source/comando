@@ -286,6 +286,10 @@
         closeSheet();
       } else if (m.a === "apps") {
         showInstalledApps(m.list || []);
+      } else if (m.a === "vol") {
+        toast(m.m ? "Som desligado" : (m.v != null ? "Volume " + m.v : "Volume"));
+      } else if (m.a === "err") {
+        toast("Erro na TV (" + m.c + "): " + m.m);
       }
     };
     c.onConnectionLost = function () {
