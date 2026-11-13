@@ -49,10 +49,11 @@
   /* linha de topo */
   .top-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
   .top-row .btn { height: 64px; border-radius: 20px; flex-direction: column; gap: 4px; font-size: 12px; font-weight: 500; }
-  .power { background: var(--red) !important; color: #fff; border-color: var(--red) !important; }
+  .primary-btn { background: var(--ink) !important; color: #fff; border-color: var(--ink) !important; }
+  .primary-btn:active { background: #1e293b !important; }
 
   /* direcional */
-  .dpad-wrap { display: flex; justify-content: center; padding: 6px 0; }
+  .dpad-wrap { display: flex; justify-content: center; padding: 6px 0 0; }
   .dpad { position: relative; width: 270px; height: 270px; border-radius: 50%; }
   .dpad .dir { position: absolute; width: 80px; height: 80px; border-radius: 50%; color: var(--ink2); }
   .dpad .up { left: 95px; top: 6px; } .dpad .down { left: 95px; bottom: 6px; }
@@ -64,6 +65,7 @@
   }
   .dpad .ok:active { background: #1e293b; }
   .dpad svg { width: 30px; height: 30px; }
+  .hint { text-align: center; font-size: 12px; color: var(--ink2); margin-top: -8px; }
 
   .nav-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
   .nav-row .btn { height: 56px; border-radius: 18px; gap: 8px; font-size: 15px; font-weight: 500; }
@@ -74,9 +76,6 @@
   .rocker .btn { font-size: 26px; font-weight: 400; }
   .rocker .mid { font-size: 13px; font-weight: 600; letter-spacing: 1.5px; color: var(--ink2); gap: 6px; }
   .rocker .mid svg { width: 18px; height: 18px; }
-
-  .media-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
-  .media-row .btn { height: 52px; border-radius: 16px; }
 
   /* apps */
   h2 { font-size: 14px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--ink2); display: flex; justify-content: space-between; align-items: center; }
@@ -97,8 +96,9 @@
   #numpad { display: none; grid-template-columns: repeat(3, 1fr); gap: 10px; }
   #numpad.show { display: grid; }
   #numpad .btn { height: 54px; border-radius: 16px; font-size: 22px; }
+  #numpad .typed { grid-column: 1 / -1; text-align: center; font-size: 15px; color: var(--ink2); min-height: 20px; }
 
-  /* folha de definições */
+  /* folha de ligação */
   #sheet-bg { position: fixed; inset: 0; background: rgba(15,23,42,.35); opacity: 0; pointer-events: none; transition: opacity .2s; z-index: 10; }
   #sheet {
     position: fixed; left: 0; right: 0; bottom: 0; z-index: 11;
@@ -113,16 +113,14 @@
   #sheet h3 { font-size: 22px; font-weight: 600; }
   #sheet p { font-size: 14px; color: var(--ink2); line-height: 1.45; }
   #sheet label { font-size: 13px; font-weight: 600; color: var(--ink2); }
-  #ip {
-    width: 100%; height: 52px; border-radius: 14px; border: 1.5px solid #cbd5e1;
-    padding: 0 16px; font: inherit; font-size: 18px; color: var(--ink); outline: none; margin-top: 6px;
+  #code {
+    width: 100%; height: 56px; border-radius: 14px; border: 1.5px solid #cbd5e1;
+    padding: 0 16px; font: inherit; font-size: 22px; letter-spacing: 3px; text-transform: uppercase;
+    color: var(--ink); outline: none; margin-top: 6px; text-align: center;
   }
-  #ip:focus { border-color: var(--accent); }
+  #code:focus { border-color: var(--accent); }
   .primary { height: 52px; border-radius: 14px; background: var(--ink); color: #fff; font-size: 16px; font-weight: 600; }
   .secondary { height: 48px; border-radius: 14px; background: #eef2ff; color: var(--accent); font-size: 15px; font-weight: 500; }
-  #help { display: none; background: #fff7ed; border: 1px solid #fed7aa; border-radius: 14px; padding: 14px; }
-  #help.show { display: block; }
-  #help a { color: #c2410c; font-weight: 600; word-break: break-all; }
 
   #toast {
     position: fixed; left: 50%; top: max(16px, env(safe-area-inset-top)); z-index: 20;
@@ -147,17 +145,17 @@
   </header>
 
   <div class="top-row">
-    <button class="btn glass power" data-key="KEY_POWER">
-      <svg viewBox="0 0 24 24"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg>Ligar
+    <button class="btn glass primary-btn" data-cmd='{"a":"home"}'>
+      <svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg>Início
     </button>
-    <button class="btn glass" data-key="KEY_SOURCE">
+    <button class="btn glass" data-cmd='{"a":"app","id":"com.samsung.tv.coba.source","n":"Fontes"}'>
       <svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg>Fonte
     </button>
-    <button class="btn glass" data-key="KEY_MENU">
+    <button class="btn glass" data-cmd='{"a":"app","id":"org.tizen.menu","n":"Definições"}'>
       <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Definições
     </button>
     <button class="btn glass" id="numpad-toggle">
-      <svg viewBox="0 0 24 24"><circle cx="6" cy="6" r="1.2"/><circle cx="12" cy="6" r="1.2"/><circle cx="18" cy="6" r="1.2"/><circle cx="6" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="18" cy="12" r="1.2"/><circle cx="6" cy="18" r="1.2"/><circle cx="12" cy="18" r="1.2"/><circle cx="18" cy="18" r="1.2"/></svg>123
+      <svg viewBox="0 0 24 24"><circle cx="6" cy="6" r="1.2"/><circle cx="12" cy="6" r="1.2"/><circle cx="18" cy="6" r="1.2"/><circle cx="6" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="18" cy="12" r="1.2"/><circle cx="6" cy="18" r="1.2"/><circle cx="12" cy="18" r="1.2"/><circle cx="18" cy="18" r="1.2"/></svg>Canal
     </button>
   </div>
 
@@ -165,48 +163,42 @@
 
   <div class="dpad-wrap">
     <div class="dpad glass">
-      <button class="btn dir up" data-key="KEY_UP" data-repeat><svg viewBox="0 0 24 24"><polyline points="6 15 12 9 18 15"/></svg></button>
-      <button class="btn dir down" data-key="KEY_DOWN" data-repeat><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></button>
-      <button class="btn dir left" data-key="KEY_LEFT" data-repeat><svg viewBox="0 0 24 24"><polyline points="15 6 9 12 15 18"/></svg></button>
-      <button class="btn dir right" data-key="KEY_RIGHT" data-repeat><svg viewBox="0 0 24 24"><polyline points="9 6 15 12 9 18"/></svg></button>
-      <button class="btn ok" data-key="KEY_ENTER">OK</button>
+      <button class="btn dir up" data-cmd='{"a":"key","k":"UP"}' data-repeat><svg viewBox="0 0 24 24"><polyline points="6 15 12 9 18 15"/></svg></button>
+      <button class="btn dir down" data-cmd='{"a":"key","k":"DOWN"}' data-repeat><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></button>
+      <button class="btn dir left" data-cmd='{"a":"key","k":"LEFT"}' data-repeat><svg viewBox="0 0 24 24"><polyline points="15 6 9 12 15 18"/></svg></button>
+      <button class="btn dir right" data-cmd='{"a":"key","k":"RIGHT"}' data-repeat><svg viewBox="0 0 24 24"><polyline points="9 6 15 12 9 18"/></svg></button>
+      <button class="btn ok" data-cmd='{"a":"key","k":"ENTER"}'>OK</button>
     </div>
   </div>
+  <p class="hint">As setas e o OK mexem no ecrã do Home.</p>
 
   <div class="nav-row">
-    <button class="btn glass" data-key="KEY_RETURN">
+    <button class="btn glass" data-cmd='{"a":"key","k":"BACK"}'>
       <svg viewBox="0 0 24 24"><polyline points="9 14 4 9 9 4"/><path d="M20 20v-7a4 4 0 0 0-4-4H4"/></svg>Voltar
     </button>
-    <button class="btn glass" id="home-btn">
-      <svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg>Início
+    <button class="btn glass" data-cmd='{"a":"app","id":"org.tizen.tv-viewer","n":"TV"}'>
+      <svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><polyline points="17 2 12 7 7 2"/></svg>TV
     </button>
-    <button class="btn glass" data-key="KEY_EXIT">
-      <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Sair
+    <button class="btn glass" data-cmd='{"a":"app","id":"org.tizen.browser","n":"Internet"}'>
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>Internet
     </button>
   </div>
 
   <div class="rockers">
     <div class="rocker glass">
-      <button class="btn" data-key="KEY_VOLUP" data-repeat>+</button>
-      <button class="btn mid" data-key="KEY_MUTE">
+      <button class="btn" data-cmd='{"a":"vol","d":"up"}' data-repeat>+</button>
+      <button class="btn mid" data-cmd='{"a":"vol","d":"mute"}'>
         <svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>VOL
       </button>
-      <button class="btn" data-key="KEY_VOLDOWN" data-repeat>−</button>
+      <button class="btn" data-cmd='{"a":"vol","d":"down"}' data-repeat>−</button>
     </div>
     <div class="rocker glass">
-      <button class="btn" data-key="KEY_CHUP" data-repeat>+</button>
-      <button class="btn mid" data-key="KEY_CH_LIST">
+      <button class="btn" data-cmd='{"a":"ch","d":"up"}'>+</button>
+      <button class="btn mid" data-cmd='{"a":"app","id":"org.tizen.tv-viewer","n":"TV"}'>
         <svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><circle cx="3.5" cy="6" r=".8"/><circle cx="3.5" cy="12" r=".8"/><circle cx="3.5" cy="18" r=".8"/></svg>CANAIS
       </button>
-      <button class="btn" data-key="KEY_CHDOWN" data-repeat>−</button>
+      <button class="btn" data-cmd='{"a":"ch","d":"down"}'>−</button>
     </div>
-  </div>
-
-  <div class="media-row">
-    <button class="btn glass" data-key="KEY_REWIND"><svg viewBox="0 0 24 24"><polygon points="11 19 2 12 11 5 11 19"/><polygon points="22 19 13 12 22 5 22 19"/></svg></button>
-    <button class="btn glass" data-key="KEY_PLAY"><svg viewBox="0 0 24 24"><polygon points="6 4 20 12 6 20 6 4"/></svg></button>
-    <button class="btn glass" data-key="KEY_PAUSE"><svg viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg></button>
-    <button class="btn glass" data-key="KEY_FF"><svg viewBox="0 0 24 24"><polygon points="13 19 22 12 13 5 13 19"/><polygon points="2 19 11 12 2 5 2 19"/></svg></button>
   </div>
 
   <section>
@@ -219,38 +211,33 @@
 <div id="sheet-bg"></div>
 <div id="sheet">
   <h3>Ligar à TV</h3>
-  <p>O telemóvel e a TV têm de estar na mesma rede Wi-Fi. O IP da TV está em
-     <b>Definições → Geral → Rede → Estado da rede → Definições IP</b>.</p>
+  <p>Escreve o <b>código do comando</b> que aparece no canto superior direito do Home, na TV.
+     Só precisas de fazer isto uma vez.</p>
   <div>
-    <label for="ip">IP da TV</label>
-    <input id="ip" inputmode="decimal" placeholder="ex.: 192.168.1.50" autocomplete="off">
+    <label for="code">Código</label>
+    <input id="code" placeholder="XXXXX-XXXXX" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="11">
   </div>
   <button class="primary" id="connect">Ligar</button>
-  <div id="help">
-    <p><b>Não consegui ligar.</b> Na primeira vez, abre este link no telemóvel, carrega em
-      “Avançadas” → “Continuar” e depois volta aqui:</p>
-    <p style="margin-top:8px"><a id="cert-link" target="_blank" rel="noopener"></a></p>
-    <p style="margin-top:8px">Confirma também que aceitaste o pedido de ligação que aparece na TV.</p>
-  </div>
   <button class="secondary" id="close-settings">Fechar</button>
 </div>
 
 <div id="toast"></div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.min.js"></script>
 <script>
 (function () {
   "use strict";
 
   // ===== Configuração =====
-  var HOME_APP_ID = "HmScrn0001.HomeScreen";   // a nossa app de home screen
-  var REMOTE_NAME = "Comando Home";
+  // As ordens passam pelo servidor MQTT público da HiveMQ, num canal com o código secreto da TV.
+  var BROKER = "broker.hivemq.com", PORT = 8884, PATH = "/mqtt";
   var DEFAULT_APPS = [
-    { name: "YouTube",     appId: "111299001912",     color: "#e62117", glyph: "▶" },
-    { name: "Netflix",     appId: "3201907018807",    color: "#b20710", glyph: "N" },
-    { name: "Prime Video", appId: "3201910019365",    color: "#0f79af", glyph: "P" },
-    { name: "Disney+",     appId: "3201901017640",    color: "#113ccf", glyph: "D+" },
-    { name: "Spotify",     appId: "3201606009684",    color: "#1db954", glyph: "♪" },
-    { name: "Browser",     appId: "org.tizen.browser", color: "#5b5f97", glyph: "◎" }
+    { name: "YouTube",     appId: "com.samsung.tv.cobalt-yt", color: "#e62117", glyph: "▶" },
+    { name: "Netflix",     appId: "org.tizen.netflix-app",    color: "#b20710", glyph: "N" },
+    { name: "Prime Video", appId: "org.tizen.primevideo",     color: "#0f79af", glyph: "P" },
+    { name: "Disney+",     appId: "MCmYXNxgcu.DisneyPlus",    color: "#113ccf", glyph: "D+" },
+    { name: "Spotify",     appId: "rJeHak5zRg.Spotify",       color: "#1db954", glyph: "♪" },
+    { name: "Internet",    appId: "org.tizen.browser",        color: "#5b5f97", glyph: "◎" }
   ];
   var PALETTE = ["#6366f1", "#0ea5e9", "#10b981", "#f59e0b", "#ef4444", "#ec4899", "#8b5cf6", "#14b8a6"];
 
@@ -258,8 +245,8 @@
   function load(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
   function save(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
 
-  var ws = null, connected = false, ip = load("tv-ip") || "", token = load("tv-token") || "";
-  var triedPlain = false;
+  var code = load("tv-code") || "";
+  var client = null, mqttUp = false, tvSeen = false, pingTimer = null;
 
   // ===== UI helpers =====
   var toastTimer;
@@ -270,8 +257,7 @@
     toastTimer = setTimeout(function () { t.classList.remove("show"); }, 2400);
   }
   function setStatus(state, txt) {
-    var s = document.getElementById("status");
-    s.className = state;
+    document.getElementById("status").className = state;
     document.getElementById("status-txt").textContent = txt;
   }
   function buzz() { try { navigator.vibrate && navigator.vibrate(12); } catch (e) {} }
@@ -280,108 +266,103 @@
     return "rgb(" + Math.round(r + (255 - r) * amt) + "," + Math.round(g + (255 - g) * amt) + "," + Math.round(b + (255 - b) * amt) + ")";
   }
 
-  // ===== Ligação à TV (API de comando da Samsung) =====
-  function wsUrl(secure) {
-    var name = btoa(REMOTE_NAME);
-    return (secure ? "wss://" + ip + ":8002" : "ws://" + ip + ":8001") +
-      "/api/v2/channels/samsung.remote.control?name=" + name + (token && secure ? "&token=" + token : "");
-  }
+  // ===== Ligação (MQTT) =====
+  function topic(kind) { return "hometv/" + code + "/" + kind; }
 
-  function connect(secure) {
-    if (!ip) { openSheet(); return; }
-    if (secure === undefined) { secure = true; triedPlain = false; }
-    try { if (ws) ws.close(); } catch (e) {}
-    setStatus("wait", "A ligar… aceita o pedido na TV");
-    var opened = false, sock;
-    try { sock = new WebSocket(wsUrl(secure)); }
-    catch (e) { return failed(secure); }
-    ws = sock;
-
-    sock.onopen = function () { opened = true; };
-    sock.onmessage = function (ev) {
-      var msg; try { msg = JSON.parse(ev.data); } catch (e) { return; }
-      if (msg.event === "ms.channel.connect") {
-        connected = true;
-        if (msg.data && msg.data.token) { token = msg.data.token; save("tv-token", token); }
-        setStatus("on", "Ligado à TV · " + ip);
-        document.getElementById("help").classList.remove("show");
+  function connect() {
+    if (!code) { openSheet(); return; }
+    if (typeof Paho === "undefined") { setStatus("", "Sem internet"); return; }
+    try { if (client && client.isConnected()) client.disconnect(); } catch (e) {}
+    mqttUp = false; tvSeen = false;
+    setStatus("wait", "A ligar…");
+    var c = new Paho.MQTT.Client(BROKER, PORT, PATH, "phone-" + Math.floor(Math.random() * 1e9));
+    client = c;
+    c.onMessageArrived = function (msg) {
+      var m; try { m = JSON.parse(msg.payloadString); } catch (e) { return; }
+      if (m.a === "pong") {
+        if (!tvSeen) toast("Ligado à TV");
+        tvSeen = true;
+        setStatus("on", "Ligado à TV");
         closeSheet();
-        toast("Ligado à TV");
-      } else if (msg.event === "ms.channel.unauthorized") {
-        setStatus("", "A TV recusou a ligação");
-        toast("A TV recusou. Tenta outra vez e aceita na TV.");
-      } else if (msg.event === "ed.installedApp.get") {
-        showInstalledApps((msg.data && msg.data.data) || []);
+      } else if (m.a === "apps") {
+        showInstalledApps(m.list || []);
       }
     };
-    sock.onclose = function () {
-      if (ws !== sock) return;
-      var was = connected;
-      connected = false;
-      if (!opened) return failed(secure);
-      setStatus("", "Ligação perdida");
-      if (was) toast("Ligação à TV perdida");
+    c.onConnectionLost = function () {
+      if (client !== c) return;
+      mqttUp = false;
+      setStatus("wait", "A voltar a ligar…");
+      setTimeout(function () { if (client === c) connect(); }, 2000);
     };
-    sock.onerror = function () {};
+    c.connect({
+      useSSL: true, keepAliveInterval: 30, timeout: 10,
+      onSuccess: function () {
+        if (client !== c) return;
+        mqttUp = true;
+        c.subscribe(topic("state"));
+        ping();
+      },
+      onFailure: function () {
+        if (client !== c) return;
+        setStatus("", "Não consegui ligar ao servidor");
+        setTimeout(function () { if (client === c) connect(); }, 4000);
+      }
+    });
   }
 
-  function failed(secure) {
-    // tenta a porta sem encriptação (só possível se esta página não for https)
-    if (secure && !triedPlain && location.protocol !== "https:") {
-      triedPlain = true;
-      return connect(false);
-    }
-    setStatus("", "Não consegui ligar");
-    var link = "https://" + ip + ":8002/api/v2/";
-    var a = document.getElementById("cert-link");
-    a.href = link; a.textContent = link;
-    document.getElementById("help").classList.add("show");
-    openSheet();
+  function ping() {
+    publish({ a: "ping" }, true);
+    clearTimeout(pingTimer);
+    pingTimer = setTimeout(function () {
+      if (!tvSeen) setStatus("wait", "À espera da TV… (o Home está aberto?)");
+    }, 4000);
   }
 
-  function send(obj) {
-    if (!connected || !ws) { toast(ip ? "Sem ligação à TV" : "Primeiro liga à TV"); if (!ip) openSheet(); return false; }
-    ws.send(JSON.stringify(obj));
+  function publish(obj, silent) {
+    if (!mqttUp || !client) { if (!silent) toast(code ? "Sem ligação" : "Primeiro liga à TV"); if (!code) openSheet(); return false; }
+    var m = new Paho.MQTT.Message(JSON.stringify(obj));
+    m.destinationName = topic("cmd");
+    client.send(m);
     return true;
   }
 
-  function sendKey(key) {
+  function send(cmd) {
     buzz();
-    send({ method: "ms.remote.control",
-           params: { Cmd: "Click", DataOfCmd: key, Option: "false", TypeOfRemote: "SendRemoteKey" } });
-  }
-
-  function launchApp(appId, name) {
-    buzz();
-    if (send({ method: "ms.channel.emit",
-               params: { event: "ed.apps.launch", to: "host", data: { appId: appId, action_type: "DEEP_LINK" } } })) {
-      toast("A abrir " + (name || appId));
-    }
+    if (publish(cmd) && cmd.a === "app") toast("A abrir " + (cmd.n || cmd.id));
   }
 
   // ===== Botões =====
-  document.querySelectorAll("[data-key]").forEach(function (b) {
-    var key = b.getAttribute("data-key"), repeat = b.hasAttribute("data-repeat");
+  document.querySelectorAll("[data-cmd]").forEach(function (b) {
+    var cmd = JSON.parse(b.getAttribute("data-cmd")), repeat = b.hasAttribute("data-repeat");
     var timer = null, delay = null;
     function stop() { clearTimeout(delay); clearInterval(timer); timer = delay = null; }
     b.addEventListener("pointerdown", function (e) {
       e.preventDefault();
-      sendKey(key);
-      if (repeat) delay = setTimeout(function () { timer = setInterval(function () { sendKey(key); }, 140); }, 450);
+      send(cmd);
+      if (repeat) delay = setTimeout(function () { timer = setInterval(function () { send(cmd); }, 160); }, 450);
     });
     ["pointerup", "pointerleave", "pointercancel"].forEach(function (ev) { b.addEventListener(ev, stop); });
     b.addEventListener("contextmenu", function (e) { e.preventDefault(); });
   });
 
-  document.getElementById("home-btn").addEventListener("click", function () { launchApp(HOME_APP_ID, "Início"); });
-
-  // teclado numérico
-  var np = document.getElementById("numpad");
+  // teclado numérico: junta os algarismos e muda de canal ao fim de 1,5 s
+  var np = document.getElementById("numpad"), typed = "", typedTimer = null;
+  var typedEl = document.createElement("div");
+  typedEl.className = "typed";
+  np.appendChild(typedEl);
   ["1","2","3","4","5","6","7","8","9","","0",""].forEach(function (n) {
     var b = document.createElement("button");
     if (n) {
       b.className = "btn glass"; b.textContent = n;
-      b.addEventListener("click", function () { sendKey("KEY_" + n); });
+      b.addEventListener("click", function () {
+        buzz();
+        typed += n; typedEl.textContent = "Canal " + typed;
+        clearTimeout(typedTimer);
+        typedTimer = setTimeout(function () {
+          publish({ a: "ch", n: typed });
+          typed = ""; typedEl.textContent = "";
+        }, 1500);
+      });
     }
     np.appendChild(b);
   });
@@ -401,7 +382,7 @@
       ic.style.setProperty("--c2", lighten(color, .35));
       ic.textContent = a.glyph || (a.name || "?").charAt(0).toUpperCase();
       b.lastChild.textContent = a.name;
-      b.addEventListener("click", function () { launchApp(a.appId, a.name); });
+      b.addEventListener("click", function () { send({ a: "app", id: a.appId, n: a.name }); });
       box.appendChild(b);
     });
   }
@@ -410,35 +391,37 @@
     var known = {};
     DEFAULT_APPS.forEach(function (a) { known[a.appId] = a; });
     renderApps(list.map(function (a) {
-      return known[a.appId] || { name: a.name, appId: a.appId };
+      return known[a.id] || { name: a.n, appId: a.id };
     }).sort(function (x, y) { return x.name.localeCompare(y.name); }));
     toast(list.length + " apps encontradas");
   }
-  document.getElementById("load-apps").addEventListener("click", function () {
-    send({ method: "ms.channel.emit", params: { event: "ed.installedApp.get", to: "host" } });
-  });
+  document.getElementById("load-apps").addEventListener("click", function () { send({ a: "apps" }); });
   renderApps(DEFAULT_APPS);
 
   // ===== Folha de ligação =====
-  function openSheet() { document.getElementById("ip").value = ip; document.body.classList.add("sheet"); }
+  function pretty(c) { return c ? c.slice(0, 5) + "-" + c.slice(5) : ""; }
+  function openSheet() { document.getElementById("code").value = pretty(code); document.body.classList.add("sheet"); }
   function closeSheet() { document.body.classList.remove("sheet"); }
   document.getElementById("open-settings").addEventListener("click", openSheet);
   document.getElementById("close-settings").addEventListener("click", closeSheet);
   document.getElementById("sheet-bg").addEventListener("click", closeSheet);
   document.getElementById("connect").addEventListener("click", function () {
-    var v = document.getElementById("ip").value.trim();
-    if (!/^\d{1,3}(\.\d{1,3}){3}$/.test(v)) { toast("Escreve um IP válido, ex.: 192.168.1.50"); return; }
-    if (v !== ip) { token = ""; save("tv-token", ""); }
-    ip = v; save("tv-ip", ip);
+    var v = document.getElementById("code").value.toUpperCase().replace(/[^A-Z0-9]/g, "");
+    if (v.length !== 10) { toast("O código tem 10 letras/números"); return; }
+    code = v; save("tv-code", code);
     connect();
   });
 
-  // ligar automaticamente se já houver IP guardado
-  if (ip) connect(); else setTimeout(openSheet, 400);
+  // o link pode trazer o código: .../comando/#ABCDE12345
+  var fromHash = location.hash.replace("#", "").toUpperCase().replace(/[^A-Z0-9]/g, "");
+  if (fromHash.length === 10) { code = fromHash; save("tv-code", code); history.replaceState(null, "", location.pathname); }
 
-  // voltar a ligar quando a app volta ao primeiro plano
+  if (code) connect(); else setTimeout(openSheet, 400);
+
+  // ao voltar à app, confirma que a TV está lá
   document.addEventListener("visibilitychange", function () {
-    if (!document.hidden && ip && !connected) connect();
+    if (document.hidden || !code) return;
+    if (!client || !mqttUp) connect(); else ping();
   });
 })();
 </script>

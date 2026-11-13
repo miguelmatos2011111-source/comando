@@ -1,6 +1,12 @@
 # Comando — comando da TV no telemóvel
 
-É uma página web (`index.html`) que fala diretamente com a TV pela rede Wi-Fi, usando a API de comando que as TVs Samsung trazem.
+> **Atualização:** esta TV ignora a API de comando da Samsung. Por isso, o comando já não fala diretamente com a TV.
+> As ordens passam pelo servidor MQTT público e gratuito da HiveMQ (`broker.hivemq.com`), num canal com o código secreto que aparece no canto do Home.
+> É o próprio Home, a correr na TV, que as executa. Para ligar, escreve esse código no telemóvel.
+> As setas só mexem dentro do Home. Não há botão para ligar nem desligar a TV.
+> Algumas das instruções abaixo (IP da TV, aviso de segurança, pedido de autorização na TV) são da versão antiga e já não se aplicam.
+
+É uma página web (`index.html`).
 
 ## O que faz
 - **Ligar/desligar** a TV, mudar de **fonte** e abrir as **definições**.
