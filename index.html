@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="theme-color" content="#eef0ff">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<title>Comando</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&display=swap">
+<style>
+  :root {
+    --ink: #0f172a; --ink2: #475569;
+    --glass: rgba(255,255,255,.6); --glass-b: rgba(255,255,255,.9);
+    --shadow: 0 10px 30px rgba(15,23,42,.12);
+    --accent: #6366f1; --red: #ef4444; --green: #22c55e;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body { min-height: 100%; }
+  body {
+    font-family: "Outfit", "Segoe UI", Roboto, system-ui, sans-serif;
+    color: var(--ink);
+    background:
+      radial-gradient(420px 380px at 0% 0%, rgba(125,211,252,.7), transparent 70%),
+      radial-gradient(420px 380px at 100% 20%, rgba(255,179,217,.6), transparent 70%),
+      radial-gradient(500px 420px at 50% 100%, rgba(165,180,252,.8), transparent 70%),
+      #f3f1ff;
+    background-attachment: fixed;
+    user-select: none; -webkit-user-select: none;
+    padding: max(16px, env(safe-area-inset-top)) 16px max(24px, env(safe-area-inset-bottom));
+  }
+  .wrap { max-width: 420px; margin: 0 auto; display: flex; flex-direction: column; gap: 18px; }
+
+  button { font: inherit; color: inherit; border: none; background: none; cursor: pointer; touch-action: manipulation; }
+  .glass { background: var(--glass); border: 1.5px solid var(--glass-b); box-shadow: var(--shadow); }
+  .btn { display: flex; align-items: center; justify-content: center; transition: transform .12s, background .12s; }
+  .btn:active { transform: scale(.92); background: rgba(255,255,255,.95); }
+  svg { width: 24px; height: 24px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* topo */
+  header { display: flex; align-items: center; justify-content: space-between; }
+  header h1 { font-size: 26px; font-weight: 600; }
+  #status { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--ink2); margin-top: 2px; }
+  #status .dot { width: 9px; height: 9px; border-radius: 50%; background: #94a3b8; }
+  #status.on .dot { background: var(--green); box-shadow: 0 0 0 4px rgba(34,197,94,.2); }
+  #status.wait .dot { background: #f59e0b; }
+  .icon-btn { width: 48px; height: 48px; border-radius: 16px; }
+
+  /* linha de topo */
+  .top-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .top-row .btn { height: 64px; border-radius: 20px; flex-direction: column; gap: 4px; font-size: 12px; font-weight: 500; }
+  .power { background: var(--red) !important; color: #fff; border-color: var(--red) !important; }
+
+  /* direcional */
+  .dpad-wrap { display: flex; justify-content: center; padding: 6px 0; }
+  .dpad { position: relative; width: 270px; height: 270px; border-radius: 50%; }
+  .dpad .dir { position: absolute; width: 80px; height: 80px; border-radius: 50%; color: var(--ink2); }
+  .dpad .up { left: 95px; top: 6px; } .dpad .down { left: 95px; bottom: 6px; }
+  .dpad .left { left: 6px; top: 95px; } .dpad .right { right: 6px; top: 95px; }
+  .dpad .ok {
+    position: absolute; left: 75px; top: 75px; width: 120px; height: 120px; border-radius: 50%;
+    background: var(--ink); color: #fff; font-size: 22px; font-weight: 600;
+    box-shadow: 0 12px 28px rgba(15,23,42,.35);
+  }
+  .dpad .ok:active { background: #1e293b; }
+  .dpad svg { width: 30px; height: 30px; }
+
+  .nav-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .nav-row .btn { height: 56px; border-radius: 18px; gap: 8px; font-size: 15px; font-weight: 500; }
+
+  /* volume / canais */
+  .rockers { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .rocker { border-radius: 26px; display: grid; grid-template-rows: 60px 44px 60px; overflow: hidden; }
+  .rocker .btn { font-size: 26px; font-weight: 400; }
+  .rocker .mid { font-size: 13px; font-weight: 600; letter-spacing: 1.5px; color: var(--ink2); gap: 6px; }
+  .rocker .mid svg { width: 18px; height: 18px; }
+
+  .media-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .media-row .btn { height: 52px; border-radius: 16px; }
+
+  /* apps */
+  h2 { font-size: 14px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--ink2); display: flex; justify-content: space-between; align-items: center; }
+  h2 button { font-size: 13px; letter-spacing: 0; text-transform: none; color: var(--accent); font-weight: 500; }
+  #apps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px 10px; margin-top: 12px; }
+  .app { display: flex; flex-direction: column; align-items: center; gap: 6px; font-size: 12px; font-weight: 500; text-align: center; }
+  .app .ic {
+    width: 62px; height: 62px; border-radius: 18px; color: #fff;
+    display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 600;
+    background: linear-gradient(150deg, var(--c2), var(--c));
+    box-shadow: 0 8px 18px rgba(15,23,42,.18);
+    transition: transform .12s;
+  }
+  .app:active .ic { transform: scale(.9); }
+  .app span:last-child { max-width: 76px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+  /* teclado numérico */
+  #numpad { display: none; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  #numpad.show { display: grid; }
+  #numpad .btn { height: 54px; border-radius: 16px; font-size: 22px; }
+
+  /* folha de definições */
+  #sheet-bg { position: fixed; inset: 0; background: rgba(15,23,42,.35); opacity: 0; pointer-events: none; transition: opacity .2s; z-index: 10; }
+  #sheet {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 11;
+    max-width: 480px; margin: 0 auto;
+    background: #fff; border-radius: 28px 28px 0 0;
+    padding: 24px 20px max(24px, env(safe-area-inset-bottom));
+    transform: translateY(105%); transition: transform .25s ease;
+    display: flex; flex-direction: column; gap: 14px;
+  }
+  body.sheet #sheet { transform: none; }
+  body.sheet #sheet-bg { opacity: 1; pointer-events: auto; }
+  #sheet h3 { font-size: 22px; font-weight: 600; }
+  #sheet p { font-size: 14px; color: var(--ink2); line-height: 1.45; }
+  #sheet label { font-size: 13px; font-weight: 600; color: var(--ink2); }
+  #ip {
+    width: 100%; height: 52px; border-radius: 14px; border: 1.5px solid #cbd5e1;
+    padding: 0 16px; font: inherit; font-size: 18px; color: var(--ink); outline: none; margin-top: 6px;
+  }
+  #ip:focus { border-color: var(--accent); }
+  .primary { height: 52px; border-radius: 14px; background: var(--ink); color: #fff; font-size: 16px; font-weight: 600; }
+  .secondary { height: 48px; border-radius: 14px; background: #eef2ff; color: var(--accent); font-size: 15px; font-weight: 500; }
+  #help { display: none; background: #fff7ed; border: 1px solid #fed7aa; border-radius: 14px; padding: 14px; }
+  #help.show { display: block; }
+  #help a { color: #c2410c; font-weight: 600; word-break: break-all; }
+
+  #toast {
+    position: fixed; left: 50%; top: max(16px, env(safe-area-inset-top)); z-index: 20;
+    transform: translateX(-50%) translateY(-120%);
+    background: var(--ink); color: #fff; padding: 12px 20px; border-radius: 24px; font-size: 14px;
+    transition: transform .25s; max-width: 90vw; text-align: center;
+  }
+  #toast.show { transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div>
+      <h1>Comando</h1>
+      <div id="status"><span class="dot"></span><span id="status-txt">Sem ligação</span></div>
+    </div>
+    <button class="btn glass icon-btn" id="open-settings" aria-label="Ligação">
+      <svg viewBox="0 0 24 24"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="20" r="1"/></svg>
+    </button>
+  </header>
+
+  <div class="top-row">
+    <button class="btn glass power" data-key="KEY_POWER">
+      <svg viewBox="0 0 24 24"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg>Ligar
+    </button>
+    <button class="btn glass" data-key="KEY_SOURCE">
+      <svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg>Fonte
+    </button>
+    <button class="btn glass" data-key="KEY_MENU">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Definições
+    </button>
+    <button class="btn glass" id="numpad-toggle">
+      <svg viewBox="0 0 24 24"><circle cx="6" cy="6" r="1.2"/><circle cx="12" cy="6" r="1.2"/><circle cx="18" cy="6" r="1.2"/><circle cx="6" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="18" cy="12" r="1.2"/><circle cx="6" cy="18" r="1.2"/><circle cx="12" cy="18" r="1.2"/><circle cx="18" cy="18" r="1.2"/></svg>123
+    </button>
+  </div>
+
+  <div id="numpad"></div>
+
+  <div class="dpad-wrap">
+    <div class="dpad glass">
+      <button class="btn dir up" data-key="KEY_UP" data-repeat><svg viewBox="0 0 24 24"><polyline points="6 15 12 9 18 15"/></svg></button>
+      <button class="btn dir down" data-key="KEY_DOWN" data-repeat><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></button>
+      <button class="btn dir left" data-key="KEY_LEFT" data-repeat><svg viewBox="0 0 24 24"><polyline points="15 6 9 12 15 18"/></svg></button>
+      <button class="btn dir right" data-key="KEY_RIGHT" data-repeat><svg viewBox="0 0 24 24"><polyline points="9 6 15 12 9 18"/></svg></button>
+      <button class="btn ok" data-key="KEY_ENTER">OK</button>
+    </div>
+  </div>
+
+  <div class="nav-row">
+    <button class="btn glass" data-key="KEY_RETURN">
+      <svg viewBox="0 0 24 24"><polyline points="9 14 4 9 9 4"/><path d="M20 20v-7a4 4 0 0 0-4-4H4"/></svg>Voltar
+    </button>
+    <button class="btn glass" id="home-btn">
+      <svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg>Início
+    </button>
+    <button class="btn glass" data-key="KEY_EXIT">
+      <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Sair
+    </button>
+  </div>
+
+  <div class="rockers">
+    <div class="rocker glass">
+      <button class="btn" data-key="KEY_VOLUP" data-repeat>+</button>
+      <button class="btn mid" data-key="KEY_MUTE">
+        <svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>VOL
+      </button>
+      <button class="btn" data-key="KEY_VOLDOWN" data-repeat>−</button>
+    </div>
+    <div class="rocker glass">
+      <button class="btn" data-key="KEY_CHUP" data-repeat>+</button>
+      <button class="btn mid" data-key="KEY_CH_LIST">
+        <svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><circle cx="3.5" cy="6" r=".8"/><circle cx="3.5" cy="12" r=".8"/><circle cx="3.5" cy="18" r=".8"/></svg>CANAIS
+      </button>
+      <button class="btn" data-key="KEY_CHDOWN" data-repeat>−</button>
+    </div>
+  </div>
+
+  <div class="media-row">
+    <button class="btn glass" data-key="KEY_REWIND"><svg viewBox="0 0 24 24"><polygon points="11 19 2 12 11 5 11 19"/><polygon points="22 19 13 12 22 5 22 19"/></svg></button>
+    <button class="btn glass" data-key="KEY_PLAY"><svg viewBox="0 0 24 24"><polygon points="6 4 20 12 6 20 6 4"/></svg></button>
+    <button class="btn glass" data-key="KEY_PAUSE"><svg viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg></button>
+    <button class="btn glass" data-key="KEY_FF"><svg viewBox="0 0 24 24"><polygon points="13 19 22 12 13 5 13 19"/><polygon points="2 19 11 12 2 5 2 19"/></svg></button>
+  </div>
+
+  <section>
+    <h2>Apps <button id="load-apps">Ver todas as apps da TV</button></h2>
+    <div id="apps"></div>
+  </section>
+</div>
+
+<!-- Folha de ligação -->
+<div id="sheet-bg"></div>
+<div id="sheet">
+  <h3>Ligar à TV</h3>
+  <p>O telemóvel e a TV têm de estar na mesma rede Wi-Fi. O IP da TV está em
+     <b>Definições → Geral → Rede → Estado da rede → Definições IP</b>.</p>
+  <div>
+    <label for="ip">IP da TV</label>
+    <input id="ip" inputmode="decimal" placeholder="ex.: 192.168.1.50" autocomplete="off">
+  </div>
+  <button class="primary" id="connect">Ligar</button>
+  <div id="help">
+    <p><b>Não consegui ligar.</b> Na primeira vez, abre este link no telemóvel, carrega em
+      “Avançadas” → “Continuar” e depois volta aqui:</p>
+    <p style="margin-top:8px"><a id="cert-link" target="_blank" rel="noopener"></a></p>
+    <p style="margin-top:8px">Confirma também que aceitaste o pedido de ligação que aparece na TV.</p>
+  </div>
+  <button class="secondary" id="close-settings">Fechar</button>
+</div>
+
+<div id="toast"></div>
+
+<script>
+(function () {
+  "use strict";
+
+  // ===== Configuração =====
+  var HOME_APP_ID = "HmScrn0001.HomeScreen";   // a nossa app de home screen
+  var REMOTE_NAME = "Comando Home";
+  var DEFAULT_APPS = [
+    { name: "YouTube",     appId: "111299001912",     color: "#e62117", glyph: "▶" },
+    { name: "Netflix",     appId: "3201907018807",    color: "#b20710", glyph: "N" },
+    { name: "Prime Video", appId: "3201910019365",    color: "#0f79af", glyph: "P" },
+    { name: "Disney+",     appId: "3201901017640",    color: "#113ccf", glyph: "D+" },
+    { name: "Spotify",     appId: "3201606009684",    color: "#1db954", glyph: "♪" },
+    { name: "Browser",     appId: "org.tizen.browser", color: "#5b5f97", glyph: "◎" }
+  ];
+  var PALETTE = ["#6366f1", "#0ea5e9", "#10b981", "#f59e0b", "#ef4444", "#ec4899", "#8b5cf6", "#14b8a6"];
+
+  // ===== Armazenamento local (só neste telemóvel) =====
+  function load(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function save(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+
+  var ws = null, connected = false, ip = load("tv-ip") || "", token = load("tv-token") || "";
+  var triedPlain = false;
+
+  // ===== UI helpers =====
+  var toastTimer;
+  function toast(msg) {
+    var t = document.getElementById("toast");
+    t.textContent = msg; t.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { t.classList.remove("show"); }, 2400);
+  }
+  function setStatus(state, txt) {
+    var s = document.getElementById("status");
+    s.className = state;
+    document.getElementById("status-txt").textContent = txt;
+  }
+  function buzz() { try { navigator.vibrate && navigator.vibrate(12); } catch (e) {} }
+  function lighten(hex, amt) {
+    var n = parseInt(hex.slice(1), 16), r = n >> 16, g = (n >> 8) & 255, b = n & 255;
+    return "rgb(" + Math.round(r + (255 - r) * amt) + "," + Math.round(g + (255 - g) * amt) + "," + Math.round(b + (255 - b) * amt) + ")";
+  }
+
+  // ===== Ligação à TV (API de comando da Samsung) =====
+  function wsUrl(secure) {
+    var name = btoa(REMOTE_NAME);
+    return (secure ? "wss://" + ip + ":8002" : "ws://" + ip + ":8001") +
+      "/api/v2/channels/samsung.remote.control?name=" + name + (token && secure ? "&token=" + token : "");
+  }
+
+  function connect(secure) {
+    if (!ip) { openSheet(); return; }
+    if (secure === undefined) { secure = true; triedPlain = false; }
+    try { if (ws) ws.close(); } catch (e) {}
+    setStatus("wait", "A ligar… aceita o pedido na TV");
+    var opened = false, sock;
+    try { sock = new WebSocket(wsUrl(secure)); }
+    catch (e) { return failed(secure); }
+    ws = sock;
+
+    sock.onopen = function () { opened = true; };
+    sock.onmessage = function (ev) {
+      var msg; try { msg = JSON.parse(ev.data); } catch (e) { return; }
+      if (msg.event === "ms.channel.connect") {
+        connected = true;
+        if (msg.data && msg.data.token) { token = msg.data.token; save("tv-token", token); }
+        setStatus("on", "Ligado à TV · " + ip);
+        document.getElementById("help").classList.remove("show");
+        closeSheet();
+        toast("Ligado à TV");
+      } else if (msg.event === "ms.channel.unauthorized") {
+        setStatus("", "A TV recusou a ligação");
+        toast("A TV recusou. Tenta outra vez e aceita na TV.");
+      } else if (msg.event === "ed.installedApp.get") {
+        showInstalledApps((msg.data && msg.data.data) || []);
+      }
+    };
+    sock.onclose = function () {
+      if (ws !== sock) return;
+      var was = connected;
+      connected = false;
+      if (!opened) return failed(secure);
+      setStatus("", "Ligação perdida");
+      if (was) toast("Ligação à TV perdida");
+    };
+    sock.onerror = function () {};
+  }
+
+  function failed(secure) {
+    // tenta a porta sem encriptação (só possível se esta página não for https)
+    if (secure && !triedPlain && location.protocol !== "https:") {
+      triedPlain = true;
+      return connect(false);
+    }
+    setStatus("", "Não consegui ligar");
+    var link = "https://" + ip + ":8002/api/v2/";
+    var a = document.getElementById("cert-link");
+    a.href = link; a.textContent = link;
+    document.getElementById("help").classList.add("show");
+    openSheet();
+  }
+
+  function send(obj) {
+    if (!connected || !ws) { toast(ip ? "Sem ligação à TV" : "Primeiro liga à TV"); if (!ip) openSheet(); return false; }
+    ws.send(JSON.stringify(obj));
+    return true;
+  }
+
+  function sendKey(key) {
+    buzz();
+    send({ method: "ms.remote.control",
+           params: { Cmd: "Click", DataOfCmd: key, Option: "false", TypeOfRemote: "SendRemoteKey" } });
+  }
+
+  function launchApp(appId, name) {
+    buzz();
+    if (send({ method: "ms.channel.emit",
+               params: { event: "ed.apps.launch", to: "host", data: { appId: appId, action_type: "DEEP_LINK" } } })) {
+      toast("A abrir " + (name || appId));
+    }
+  }
+
+  // ===== Botões =====
+  document.querySelectorAll("[data-key]").forEach(function (b) {
+    var key = b.getAttribute("data-key"), repeat = b.hasAttribute("data-repeat");
+    var timer = null, delay = null;
+    function stop() { clearTimeout(delay); clearInterval(timer); timer = delay = null; }
+    b.addEventListener("pointerdown", function (e) {
+      e.preventDefault();
+      sendKey(key);
+      if (repeat) delay = setTimeout(function () { timer = setInterval(function () { sendKey(key); }, 140); }, 450);
+    });
+    ["pointerup", "pointerleave", "pointercancel"].forEach(function (ev) { b.addEventListener(ev, stop); });
+    b.addEventListener("contextmenu", function (e) { e.preventDefault(); });
+  });
+
+  document.getElementById("home-btn").addEventListener("click", function () { launchApp(HOME_APP_ID, "Início"); });
+
+  // teclado numérico
+  var np = document.getElementById("numpad");
+  ["1","2","3","4","5","6","7","8","9","","0",""].forEach(function (n) {
+    var b = document.createElement("button");
+    if (n) {
+      b.className = "btn glass"; b.textContent = n;
+      b.addEventListener("click", function () { sendKey("KEY_" + n); });
+    }
+    np.appendChild(b);
+  });
+  document.getElementById("numpad-toggle").addEventListener("click", function () { np.classList.toggle("show"); });
+
+  // ===== Apps =====
+  function renderApps(list) {
+    var box = document.getElementById("apps");
+    box.innerHTML = "";
+    list.forEach(function (a, i) {
+      var color = a.color || PALETTE[i % PALETTE.length];
+      var b = document.createElement("button");
+      b.className = "app";
+      b.innerHTML = '<span class="ic"></span><span></span>';
+      var ic = b.querySelector(".ic");
+      ic.style.setProperty("--c", color);
+      ic.style.setProperty("--c2", lighten(color, .35));
+      ic.textContent = a.glyph || (a.name || "?").charAt(0).toUpperCase();
+      b.lastChild.textContent = a.name;
+      b.addEventListener("click", function () { launchApp(a.appId, a.name); });
+      box.appendChild(b);
+    });
+  }
+  function showInstalledApps(list) {
+    if (!list.length) { toast("A TV não devolveu a lista de apps"); return; }
+    var known = {};
+    DEFAULT_APPS.forEach(function (a) { known[a.appId] = a; });
+    renderApps(list.map(function (a) {
+      return known[a.appId] || { name: a.name, appId: a.appId };
+    }).sort(function (x, y) { return x.name.localeCompare(y.name); }));
+    toast(list.length + " apps encontradas");
+  }
+  document.getElementById("load-apps").addEventListener("click", function () {
+    send({ method: "ms.channel.emit", params: { event: "ed.installedApp.get", to: "host" } });
+  });
+  renderApps(DEFAULT_APPS);
+
+  // ===== Folha de ligação =====
+  function openSheet() { document.getElementById("ip").value = ip; document.body.classList.add("sheet"); }
+  function closeSheet() { document.body.classList.remove("sheet"); }
+  document.getElementById("open-settings").addEventListener("click", openSheet);
+  document.getElementById("close-settings").addEventListener("click", closeSheet);
+  document.getElementById("sheet-bg").addEventListener("click", closeSheet);
+  document.getElementById("connect").addEventListener("click", function () {
+    var v = document.getElementById("ip").value.trim();
+    if (!/^\d{1,3}(\.\d{1,3}){3}$/.test(v)) { toast("Escreve um IP válido, ex.: 192.168.1.50"); return; }
+    if (v !== ip) { token = ""; save("tv-token", ""); }
+    ip = v; save("tv-ip", ip);
+    connect();
+  });
+
+  // ligar automaticamente se já houver IP guardado
+  if (ip) connect(); else setTimeout(openSheet, 400);
+
+  // voltar a ligar quando a app volta ao primeiro plano
+  document.addEventListener("visibilitychange", function () {
+    if (!document.hidden && ip && !connected) connect();
+  });
+})();
+</script>
+</body>
+</html>
